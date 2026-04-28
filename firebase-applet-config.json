@@ -1,6 +1,9 @@
-{
-  "projectId": "gen-lang-client-0641107815",
-  "appId": "1:1026147955069:web:4674569804602de8d21c14",
-  "apiKey": "AIzaSyBnDNPm7UvXT8PDCKWsfJBs7TyK8amelPo",
-  ...
-}
+const firebaseConfig = {
+  apiKey: "AIzaSyD5vg7Dv3w_jsi3509...",
+  authDomain: "pizzeria-d4bb7.firebaseapp.com",
+  projectId: "pizzeria-d4bb7",
+  storageBucket: "pizzeria-d4bb7.firebasestorage.app",
+  messagingSenderId: "789149332",
+  appId: "1:789149332:web:c8ba3ba3a7ff401d9cbe841",
+  measurementId: "G-2Y91905GWN"
+};
