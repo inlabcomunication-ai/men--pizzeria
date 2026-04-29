@@ -443,7 +443,7 @@ export default function Dashboard() {
                   <div key={platform} className="border border-neutral-200 rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-2">
                       {SOCIAL_ICONS[platform] &&
-                        <div className="text-pizza-red">{<SOCIAL_ICONS[platform] size={20} />}</div>
+                        <div className="text-pizza-red">{(() => { const Icon = SOCIAL_ICONS[platform]; return Icon ? <Icon size={20} /> : null; })()}</div>
                       }
                       <label className="text-sm font-bold text-neutral-700 capitalize">{platform}</label>
                       <input
