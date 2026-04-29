@@ -8,7 +8,6 @@ import { QRCodeCanvas } from 'qrcode.react';
 import { auth, db, loginWithGoogle, logout, handleFirestoreError, OperationType, loginWithEmail, registerWithEmail, resetPassword } from '../lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { doc, setDoc, onSnapshot, serverTimestamp, getDocFromServer } from 'firebase/firestore';
-import _ from 'lodash';
 
 interface MenuItem {
   id: string;
@@ -166,7 +165,7 @@ export default function Dashboard() {
 
         setData((currentData) => {
           const { updatedAt: _, ownerId: __, ...currentClean } = currentData as any;
-          if (!_.isEqual(cleanFetched, currentClean)) {
+          if (JSON.stringify(cleanFetched) !== JSON.stringify(currentClean)) {
             lastSavedJson.current = JSON.stringify(cleanFetched);
             return fetched as AppData;
           }
@@ -188,7 +187,7 @@ export default function Dashboard() {
     if (lastSavedJson.current) {
         try {
             const parsedLastSaved = JSON.parse(lastSavedJson.current);
-            if (_.isEqual(cleanNewData, parsedLastSaved)) return;
+            if (JSON.stringify(cleanNewData) === JSON.stringify(parsedLastSaved)) return;
         } catch(e) {}
     }
 
