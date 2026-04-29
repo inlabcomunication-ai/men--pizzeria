@@ -1,10 +1,8 @@
-{
-  "apiKey": "AIzaSyCMyXX3wWxPu1YUVC4QPUqEM-w02SY9QP0",
-  "authDomain": "pizzeria-d4bb7.firebaseapp.com",
-  "projectId": "pizzeria-d4bb7",
-  "storageBucket": "pizzeria-d4bb7.firebasestorage.app",
-  "messagingSenderId": "789613932",
-  "appId": "1:789613932:web:48ed1a3ba7ff401d9ede11",
-  "measurementId": "G-2YP1SBDSVH",
-  "firestoreDatabaseId": "(default)"
-}
+ apiKey: "AIzaSyCMyXX3wWxPu1YUVC4QPUqEM-w02SY9QP0",
+  authDomain: "pizzeria-d48b7.firebaseapp.com",
+  projectId: "pizzeria-d48b7",
+  storageBucket: "pizzeria-d48b7.firebasestorage.app",
+  messagingSenderId: "7896139332",
+  appId: "1:7896139332:web:48ed1a36a7ff401d9ede11",
+  measurementId: "G-2YP1SBDSVH"
+};
