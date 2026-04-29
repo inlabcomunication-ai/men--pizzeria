@@ -112,13 +112,13 @@ export default function PublicMenu() {
       )}
 
       {/* Main Mobile Frame */}
-      <div className="w-full max-w-[400px] bg-white min-h-screen lg:h-[90vh] lg:min-h-0 lg:rounded-[40px] lg:shadow-[0_0_100px_rgba(0,0,0,0.5)] lg:border-[8px] lg:border-pizza-dark overflow-hidden relative flex flex-col">
+      <div className="w-full max-w-[480px] bg-white min-h-screen lg:h-[90vh] lg:min-h-0 lg:rounded-[40px] lg:shadow-[0_0_100px_rgba(0,0,0,0.5)] lg:border-[8px] lg:border-pizza-dark overflow-hidden relative flex flex-col">
         
         {/* Scrollable Content */}
         <div className="h-full overflow-y-auto bg-pizza-cream flex flex-col no-scrollbar">
           
           {/* Hero Header */}
-          <div className="h-64 shrink-0 relative bg-pizza-dark flex items-center justify-center">
+          <div className="h-72 shrink-0 relative bg-pizza-dark flex items-center justify-center">
             {data.heroImg ? (
               <img src={data.heroImg} className="absolute inset-0 w-full h-full object-cover opacity-60" alt="Hero" />
             ) : (
@@ -131,16 +131,16 @@ export default function PublicMenu() {
               className="relative z-10 text-center px-6"
             >
               {data.logoImg ? (
-                <img src={data.logoImg} className="w-20 h-20 object-contain mx-auto mb-4 bg-white/10 rounded-full backdrop-blur-sm border border-white/20 p-2" alt="Logo" />
+                <img src={data.logoImg} className="w-24 h-24 object-contain mx-auto mb-4 bg-white/10 rounded-full backdrop-blur-sm border border-white/20 p-2" alt="Logo" />
               ) : (
-                <div className="w-16 h-16 bg-pizza-red rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-pizza-gold shadow-lg">
-                  <Pizza className="text-white" size={32} />
+                <div className="w-20 h-20 bg-pizza-red rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-pizza-gold shadow-lg">
+                  <Pizza className="text-white" size={40} />
                 </div>
               )}
-              <h1 className="playfair text-2xl text-white font-black italic drop-shadow-md">
+              <h1 className="playfair text-4xl text-white font-black italic drop-shadow-md">
                 {data.title}
               </h1>
-              <p className="text-[8px] uppercase tracking-[0.2em] text-pizza-gold mt-1">
+              <p className="text-xs uppercase tracking-[0.2em] text-pizza-gold mt-2 font-bold">
                 {data.subtitle || 'Tradizione e Passione'}
               </p>
             </motion.div>
@@ -149,12 +149,12 @@ export default function PublicMenu() {
           {/* Menu Sections */}
           <div className="p-6 flex-1">
             {/* Category Chips */}
-            <div className="flex flex-wrap justify-center gap-1 mb-6">
+            <div className="flex flex-wrap justify-center gap-3 mb-8">
               {Object.entries(CATEGORIES).map(([key, label]) => (
                 <button
                   key={key}
                   onClick={() => setActiveTab(key as any)}
-                  className={`px-3 py-1 rounded-full text-[9px] font-bold border uppercase tracking-wider transition-all ${activeTab === key ? 'bg-pizza-red text-white border-pizza-red' : 'bg-white text-neutral-400 border-neutral-200 hover:bg-neutral-50'}`}
+                  className={`whitespace-nowrap px-6 py-3 rounded-full text-sm font-black border uppercase tracking-wider shadow-sm transition-all ${activeTab === key ? 'bg-pizza-red text-white border-pizza-red shadow-pizza-red/40 scale-105' : 'bg-white text-neutral-500 border-neutral-200 hover:bg-neutral-50'}`}
                 >
                   {label}
                 </button>
@@ -162,7 +162,7 @@ export default function PublicMenu() {
             </div>
 
             {/* Menu Items List */}
-            <div className="space-y-4 min-h-[300px]">
+            <div className="space-y-6 min-h-[300px]">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeTab}
@@ -170,23 +170,23 @@ export default function PublicMenu() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.25 }}
-                  className="space-y-4"
+                  className="space-y-6"
                 >
                   {data.menu[activeTab].length > 0 ? (
                     data.menu[activeTab].map((item) => (
-                       <div key={item.id} className="flex justify-between items-baseline group">
+                       <div key={item.id} className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline group gap-2 sm:gap-4">
                         <div className="flex-1">
-                          <h4 className="text-xs font-bold text-pizza-dark">{item.name}</h4>
-                          <p className="text-[9px] text-neutral-400 italic mt-0.5">
+                          <h4 className="text-xl font-black text-pizza-dark leading-tight">{item.name}</h4>
+                          <p className="text-sm text-neutral-500 italic mt-1 font-medium">
                             {activeTab === 'bibite' ? (item.ml ? `${item.ml}ml` : '') : item.ingredients}
                           </p>
                         </div>
-                        <div className="flex-1 h-[1px] border-b border-dotted border-neutral-300 mx-2 mb-1" />
-                        <span className="playfair text-sm font-black text-pizza-red italic">€{item.price.toFixed(2)}</span>
+                        <div className="hidden sm:block flex-1 h-[1px] border-b-2 border-dotted border-neutral-300 mx-2 mb-1 opacity-50" />
+                        <span className="playfair text-xl font-black text-pizza-red italic bg-pizza-red/5 px-3 py-1 rounded-lg self-start sm:self-auto">€{item.price.toFixed(2)}</span>
                       </div>
                     ))
                   ) : (
-                    <div className="text-center py-12 text-neutral-400 italic text-[10px]">
+                    <div className="text-center py-12 text-neutral-500 italic text-sm">
                       Nessun elemento disponibile in questa categoria
                     </div>
                   )}
@@ -196,16 +196,16 @@ export default function PublicMenu() {
           </div>
 
           {/* Mobile Footer */}
-          <div className="bg-pizza-dark p-6 text-center text-white shrink-0">
-            <h3 className="playfair text-lg mb-4 italic">Contatti & Social</h3>
+          <div className="bg-pizza-dark p-8 md:p-10 text-center text-white shrink-0 mt-8 rounded-t-[2.5rem]">
+            <h3 className="playfair text-3xl mb-6 italic font-bold">Contatti & Social</h3>
             
             {data.phone && (
-              <a href={`tel:${data.phone}`} className="inline-flex items-center gap-2 bg-pizza-red text-white px-6 py-2 rounded-full font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-pizza-red/30 mb-6 active:scale-95 transition-transform">
-                <Phone size={14} /> Chiama Ora
+              <a href={`tel:${data.phone}`} className="inline-flex items-center gap-3 bg-pizza-red text-white px-8 py-4 rounded-full font-black text-sm uppercase tracking-widest shadow-lg shadow-pizza-red/40 mb-8 active:scale-95 transition-transform hover:bg-pizza-red/90">
+                <Phone size={20} /> Chiama Ora
               </a>
             )}
 
-            <div className="flex justify-center gap-3 flex-wrap">
+            <div className="flex justify-center gap-4 flex-wrap">
               {(['instagram', 'facebook', 'tiktok', 'whatsapp'] as const).map(platform => {
                 const social = data.socials[platform];
                 if (!social || !social.enabled) return null;
@@ -226,15 +226,15 @@ export default function PublicMenu() {
                     href={href} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-pizza-red hover:border-pizza-red transition-all"
+                    className="w-12 h-12 rounded-full bg-white/10 border border-white/20 flex items-center justify-center hover:bg-pizza-red hover:border-white transition-all shadow-lg"
                   >
-                    <Icon size={14} />
+                    <Icon size={20} />
                   </a>
                 );
               })}
             </div>
             
-            <p className="mt-6 text-[8px] text-white/30 font-medium tracking-[0.2em] uppercase">
+            <p className="mt-10 text-[10px] text-white/40 font-black tracking-[0.2em] uppercase">
               &copy; {new Date().getFullYear()} {data.title}
             </p>
           </div>
