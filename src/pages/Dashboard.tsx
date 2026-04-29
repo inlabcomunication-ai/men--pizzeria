@@ -39,7 +39,7 @@ interface AppData {
 }
 
 const CATEGORIES = {
-  pizze: 'Pizze Rosse',
+  pizze: 'Pizza',
   bianche: 'Pizze Bianche',
   speciali: 'Speciali',
   pucce: 'Pucce',
@@ -106,9 +106,10 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [quotaExceeded, setQuotaExceeded] = useState(false);
   const lastSavedJson = useRef<string>('');
-  const saveTimeoutRef = useRef<NodeJS.Timeout>(null);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const [authMode, setAuthMode] = useState<'login' | 'register' | 'reset'>('login');
+  const [authLoading, setAuthLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState('');
@@ -118,6 +119,7 @@ export default function Dashboard() {
     e.preventDefault();
     setAuthError('');
     setAuthMessage('');
+    setAuthLoading(true);
     try {
       if (authMode === 'login') {
         await loginWithEmail(email, password);
@@ -134,7 +136,10 @@ export default function Dashboard() {
       if (error.code === 'auth/email-already-in-use') errorMsg = 'Questa email è già in uso.';
       if (error.code === 'auth/invalid-credential') errorMsg = 'Email o password errati.';
       if (error.code === 'auth/weak-password') errorMsg = 'La password deve avere almeno 6 caratteri.';
+      if (error.code === 'auth/operation-not-allowed') errorMsg = 'La registrazione con Email/Password non è abilitata nella Console Firebase. Abilitala sotto Authentication > Sign-in method.';
       setAuthError(errorMsg);
+    } finally {
+      setAuthLoading(false);
     }
   };
 
@@ -344,7 +349,8 @@ export default function Dashboard() {
                 </div>
               )}
 
-              <button type="submit" className="w-full bg-pizza-dark hover:bg-black text-white font-bold py-3 rounded-xl transition-colors shadow-lg">
+              <button type="submit" disabled={authLoading} className="w-full bg-pizza-dark flex justify-center items-center gap-2 hover:bg-black text-white font-bold py-3 rounded-xl transition-colors shadow-lg disabled:opacity-50">
+                {authLoading && <div className="w-4 h-4 rounded-full border-2 border-white/50 border-t-white animate-spin" />}
                 {authMode === 'login' ? 'Accedi' : authMode === 'register' ? 'Registrati' : 'Invia Email di Recupero'}
               </button>
             </form>
@@ -399,7 +405,7 @@ export default function Dashboard() {
 
             <section className="bg-white rounded-xl border border-neutral-200 p-6 shadow-sm"><h2 className="text-lg font-semibold mb-4"><Phone className="text-pizza-red" size={20} /> Contatti</h2><div><label className="text-sm font-bold text-neutral-500 mb-1 block">Numero Telefono</label><input type="text" value={data.phone} onChange={(e) => updateField('phone', e.target.value)} className="w-full bg-neutral-50 border border-neutral-200 rounded-lg px-4 py-3 text-sm" /></div></section>
 
-            <section className="bg-white rounded-xl border border-neutral-200 p-6 shadow-sm"><h2 className="text-lg font-semibold mb-4">Social Media</h2><div className="space-y-4">{(['instagram', 'facebook', 'whatsapp', 'tiktok'] as const).map(platform => (<div key={platform} className="border border-neutral-200 rounded-lg p-4"><div className="flex items-center gap-2 mb-2">{SOCIAL_ICONS[platform] && <div className="text-pizza-red">{React.createElement(SOCIAL_ICONS[platform], { size: 20 })}</div>}<label className="text-sm font-bold text-neutral-700 capitalize">{platform}</label><input type="checkbox" checked={data.socials[platform].enabled} onChange={(e) => updateSocial(platform, 'enabled', e.target.checked)} className="ml-auto w-4 h-4 cursor-pointer" /></div>{data.socials[platform].enabled && (<input type="text" value={data.socials[platform].url} onChange={(e) => updateSocial(platform, 'url', e.target.value)} placeholder={platform === 'whatsapp' ? '+39 123 456 7890' : `https://${platform}.com/tuoprofilo`} className="w-full bg-neutral-50 border border-neutral-200 rounded-lg px-4 py-2 text-sm" />)}</div>))}</div></section>
+            <section className="bg-white rounded-xl border border-neutral-200 p-6 shadow-sm"><h2 className="text-lg font-semibold mb-4">Social Media</h2><div className="space-y-4">{(['instagram', 'facebook', 'whatsapp', 'tiktok'] as const).map(platform => (<div key={platform} className="border border-neutral-200 rounded-lg p-4"><div className="flex items-center gap-2 mb-2">{SOCIAL_ICONS[platform] && <div className="text-pizza-red">{(() => { const Icon = SOCIAL_ICONS[platform]; return Icon ? <Icon size={20} /> : null; })()}</div>}<label className="text-sm font-bold text-neutral-700 capitalize">{platform}</label><input type="checkbox" checked={data.socials[platform].enabled} onChange={(e) => updateSocial(platform, 'enabled', e.target.checked)} className="ml-auto w-4 h-4 cursor-pointer" /></div>{data.socials[platform].enabled && (<input type="text" value={data.socials[platform].url} onChange={(e) => updateSocial(platform, 'url', e.target.value)} placeholder={platform === 'whatsapp' ? '+39 123 456 7890' : `https://${platform}.com/tuoprofilo`} className="w-full bg-neutral-50 border border-neutral-200 rounded-lg px-4 py-2 text-sm" />)}</div>))}</div></section>
 
             <section className="bg-white rounded-xl border border-neutral-200 p-6 shadow-sm"><h2 className="text-lg font-semibold mb-6 flex items-center gap-2"><Pizza size={20} /> Gestione Menu</h2><div className="flex flex-wrap gap-2 mb-6">{Object.entries(CATEGORIES).map(([key, label]) => (<button key={key} onClick={() => setActiveTab(key as any)} className={`px-4 py-2 rounded-full text-sm font-bold active:scale-95 transition-all ${activeTab === key ? 'bg-pizza-red text-white' : 'bg-neutral-100 text-neutral-500'}`}>{label}</button>))}</div><div className="space-y-4"><div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3"><input id={`add-${activeTab}-name`} placeholder="Nome" className="bg-neutral-50 border border-neutral-200 rounded-lg px-4 py-3 text-sm" /><input id={`add-${activeTab}-price`} type="number" placeholder="Prezzo" className="bg-neutral-50 border border-neutral-200 rounded-lg px-4 py-3 text-sm" /><input id={`add-${activeTab}-detail`} placeholder={activeTab === 'bibite' ? 'ml' : 'Ingredienti'} className="bg-neutral-50 border border-neutral-200 rounded-lg px-4 py-3 text-sm" /><button onClick={() => addMenuItem(activeTab)} className="bg-pizza-dark text-white px-4 py-3 rounded-lg text-sm font-bold hover:bg-black transition-colors">+ Aggiungi</button></div><div className="space-y-3">
   {data.menu[activeTab].map(item => (
@@ -448,10 +454,10 @@ export default function Dashboard() {
           </div>
         ) : (
           /* Anteprima Mobile */
-          <div className="h-full bg-neutral-200 p-8 overflow-y-auto">
-            <div className="max-w-[400px] mx-auto bg-white rounded-[40px] shadow-2xl border-[8px] border-pizza-dark overflow-hidden relative aspect-[9/19] flex flex-col">
-              <div className="h-full overflow-y-auto bg-pizza-cream flex flex-col no-scrollbar">
-                <div className="h-64 shrink-0 relative bg-pizza-dark flex items-center justify-center">
+          <div className="h-[calc(100vh-140px)] bg-neutral-200 p-4 sm:p-8 overflow-y-auto w-full">
+            <div className="max-w-[480px] mx-auto bg-white rounded-[40px] shadow-2xl border-[4px] sm:border-[8px] border-pizza-dark overflow-hidden relative flex flex-col min-h-[800px]">
+              <div className="h-full bg-pizza-cream flex flex-col no-scrollbar">
+                <div className="h-72 shrink-0 relative bg-pizza-dark flex items-center justify-center">
                   {data.heroImg ? (
                     <img src={data.heroImg} className="absolute inset-0 w-full h-full object-cover opacity-60" />
                   ) : (
@@ -459,66 +465,68 @@ export default function Dashboard() {
                   )}
                   <div className="relative z-10 text-center px-6">
                     {data.logoImg ? (
-                      <img src={data.logoImg} className="w-20 h-20 object-contain mx-auto mb-4 bg-white/10 rounded-full backdrop-blur-sm border border-white/20 p-2" />
+                      <img src={data.logoImg} className="w-24 h-24 object-contain mx-auto mb-4 bg-white/10 rounded-full backdrop-blur-sm border border-white/20 p-2" />
                     ) : (
-                      <div className="w-16 h-16 bg-pizza-red rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-pizza-gold shadow-lg">
-                        <Pizza className="text-white" size={32} />
+                      <div className="w-20 h-20 bg-pizza-red rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-pizza-gold shadow-lg">
+                        <Pizza className="text-white" size={40} />
                       </div>
                     )}
-                    <h1 className="playfair text-2xl text-white font-black italic drop-shadow-md">{data.title}</h1>
-                    <p className="text-[8px] uppercase tracking-[0.2em] text-pizza-gold mt-1">{data.subtitle || 'Tradizione e Passione'}</p>
+                    <h1 className="playfair text-4xl text-white font-black italic drop-shadow-md">{data.title}</h1>
+                    <p className="text-xs uppercase tracking-[0.2em] text-pizza-gold mt-2 font-bold">{data.subtitle || 'Tradizione e Passione'}</p>
                   </div>
                 </div>
 
                 <div className="p-6 flex-1">
-                  <div className="flex flex-wrap justify-center gap-1 mb-6">
+                  <div className="flex flex-wrap justify-center gap-3 mb-8">
                     {Object.entries(CATEGORIES).map(([key, label]) => (
-                      <button key={key} onClick={() => setPreviewTab(key as any)} className={`px-3 py-1 rounded-full text-[9px] font-bold border uppercase tracking-wider ${previewTab === key ? 'bg-pizza-red text-white border-pizza-red' : 'bg-white text-neutral-400 border-neutral-200'}`}>
+                      <button key={key} onClick={() => setPreviewTab(key as any)} className={`whitespace-nowrap px-6 py-3 rounded-full text-sm font-black border uppercase tracking-wider shadow-sm transition-all ${previewTab === key ? 'bg-pizza-red text-white border-pizza-red shadow-pizza-red/40 scale-105' : 'bg-white text-neutral-500 border-neutral-200 hover:bg-neutral-50'}`}>
                         {label}
                       </button>
                     ))}
                   </div>
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                     {data.menu[previewTab].map(item => (
-                      <div key={item.id} className="flex justify-between items-baseline group">
+                      <div key={item.id} className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline group gap-2 sm:gap-4">
                         <div className="flex-1">
-                          <h4 className="text-xs font-bold text-pizza-dark">{item.name}</h4>
-                          <p className="text-[9px] text-neutral-600 italic mt-0.5">
+                          <h4 className="text-xl font-black text-pizza-dark leading-tight">{item.name}</h4>
+                          <p className="text-sm text-neutral-500 italic mt-1 font-medium">
                             {previewTab === 'bibite' ? (item.ml ? `${item.ml}ml` : '') : item.ingredients}
                           </p>
                         </div>
-                        <div className="flex-1 h-[1px] border-b border-dotted border-neutral-300 mx-2 mb-1" />
-                        <span className="playfair text-sm font-black text-pizza-red italic">€{item.price.toFixed(2)}</span>
+                        <div className="hidden sm:block flex-1 h-[1px] border-b-2 border-dotted border-neutral-300 mx-2 mb-1 opacity-50" />
+                        <span className="playfair text-xl font-black text-pizza-red italic bg-pizza-red/5 px-3 py-1 rounded-lg self-start sm:self-auto">€{item.price.toFixed(2)}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 {/* Footer */}
-                <div className="bg-pizza-dark p-6 text-center text-white shrink-0">
-                  <h3 className="playfair text-lg mb-4 italic">Contatti & Social</h3>
+                <div className="bg-pizza-dark p-8 md:p-10 text-center text-white shrink-0 mt-8 rounded-t-[2.5rem]">
+                  <h3 className="playfair text-3xl mb-6 italic font-bold">Contatti & Social</h3>
 
                   {data.phone && (
-                    <div className="inline-flex items-center gap-2 bg-pizza-red text-white px-6 py-2 rounded-full font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-pizza-red/30 mb-6">
-                      <Phone size={14} /> Chiama Ora
+                    <div className="inline-flex items-center gap-3 bg-pizza-red hover:bg-pizza-red/90 transition-colors cursor-pointer text-white px-8 py-4 rounded-full font-black text-sm uppercase tracking-widest shadow-lg shadow-pizza-red/40 mb-8">
+                      <Phone size={20} /> Chiama Ora
                     </div>
                   )}
 
-                  <div className="flex justify-center gap-3 flex-wrap">
+                  <div className="flex justify-center gap-4 flex-wrap">
                     {(['instagram', 'facebook', 'tiktok', 'whatsapp'] as const).map(platform => {
                       const social = data.socials[platform];
                       if (!social || !social.enabled) return null;
 
-                      const Icon = SOCIAL_ICONS[platform];
                       return (
-                        <div key={platform} className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
-                          {React.createElement(Icon, { size: 14 })}
-                        </div>
+                        <a href={platform === 'whatsapp' ? `https://wa.me/${social.url.replace(/\D/g, '')}` : social.url} target="_blank" rel="noreferrer" key={platform} className="w-12 h-12 rounded-full bg-white/10 hover:bg-pizza-red border border-white/20 transition-colors flex items-center justify-center text-white shadow-lg">
+                           {(() => {
+                              const Icon = SOCIAL_ICONS[platform];
+                              return Icon ? <Icon size={20} /> : null;
+                            })()}
+                        </a>
                       );
                     })}
                   </div>
 
-                  <p className="mt-6 text-[8px] text-white/30 font-medium tracking-[0.2em] uppercase">
+                  <p className="mt-10 text-[10px] text-white/40 font-black tracking-[0.2em] uppercase">
                     &copy; {new Date().getFullYear()} {data.title}
                   </p>
                 </div>
