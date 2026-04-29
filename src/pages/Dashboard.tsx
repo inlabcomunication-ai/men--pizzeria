@@ -8,7 +8,6 @@ import { QRCodeCanvas } from 'qrcode.react';
 import { auth, db, loginWithGoogle, logout, handleFirestoreError, OperationType, loginWithEmail, registerWithEmail, resetPassword } from '../lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { doc, setDoc, onSnapshot, serverTimestamp, getDocFromServer } from 'firebase/firestore';
-import isEqual from 'lodash/isEqual';
 
 interface MenuItem {
   id: string;
