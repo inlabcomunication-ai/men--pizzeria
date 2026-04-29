@@ -35,7 +35,7 @@ interface AppData {
 }
 
 const CATEGORIES = {
-  pizze: 'Pizze Rosse',
+  pizze: 'Pizze',
   bianche: 'Pizze Bianche',
   speciali: 'Speciali',
   pucce: 'Pucce',
