@@ -382,7 +382,7 @@ export default function Dashboard() {
                     {(['instagram', 'facebook', 'whatsapp', 'tiktok'] as const).map(platform =>
                       data.socials[platform].enabled && (
                         <a key={platform} href={platform === 'whatsapp' ? `https://wa.me/${data.socials[platform].url.replace(/\D/g, '')}` : data.socials[platform].url} target="_blank" rel="noopener noreferrer" className="bg-pizza-dark hover:bg-pizza-red text-white px-8 py-4 rounded-full text-xl font-bold transition-colors flex items-center gap-2 capitalize">
-                          {SOCIAL_ICONS[platform] && <div>{<SOCIAL_ICONS[platform] size={24} />}</div>}
+                          {(() => { const Icon = SOCIAL_ICONS[platform]; return Icon ? <Icon size={24} /> : null; })()}
                           {platform}
                         </a>
                       )
